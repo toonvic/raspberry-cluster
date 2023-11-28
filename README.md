@@ -1,3 +1,8 @@
+## Alunos
+Maria Clara França <br>
+Rossana Rocha da Silva <br>
+Victor Do Amaral <br>
+
 ---
 # Clusterização de Raspberry utilizando K3S
 
