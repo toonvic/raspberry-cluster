@@ -192,3 +192,139 @@ Isso deve exibir o nó master como pronto no cluster K3S.
      kubectl get nodes
      ```
 Os nós trabalhadores devem aparecer como "prontos" no cluster K3S.
+
+# Implantação da Greetings API no Kubernetes
+
+A seguir está o arquivo YAML para implantar a Greetings API em um cluster Kubernetes. O código está disponível no [GitHub](https://github.com/seu-usuario/seu-repo/caminho/para/o/arquivo.yaml).
+
+Você pode criar um arquivo utilizando o comando abaixo e colar o conteúdo no mesmo:
+```bash
+sudo nano nome-do-arquivo.yaml
+```
+
+```yaml
+# Este arquivo Kubernetes YAML define a configuração para implantar a aplicação Greetings API em um cluster K8s.
+
+# Deployment para a Greetings API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greetings-api-deployment
+  labels:
+    app: greetings-api
+spec:
+  replicas: 6  # Número desejado de réplicas para escalabilidade
+  selector:
+    matchLabels:
+      app: greetings-api
+  template:
+    metadata:
+      labels:
+        app: greetings-api
+    spec:
+      containers:
+        - name: greetings-api
+          image: victordoamaral/greetingsapi:1.2.3  # Imagem da aplicação com a versão específica
+          imagePullPolicy: Always  # Garante que a imagem seja sempre baixada
+          ports:
+            - containerPort: 80  # Porta na qual a aplicação está escutando
+
+---
+
+# RoleBinding para conceder permissões ao ServiceAccount padrão
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+# Role para definir permissões específicas para leitura de pods
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+
+---
+
+# Serviço para expor a Greetings API
+apiVersion: v1
+kind: Service
+metadata:
+  name: greetings-api-service
+spec:
+  selector:
+    app: greetings-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort  # Expõe o serviço externamente via NodePort
+
+---
+
+# Ingress para rotear tráfego para o serviço Greetings API
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: greetings-api-ingress
+spec:
+  rules:
+  - host: raspberry.local  # Substitua pelo domínio ou IP de sua escolha
+    http:
+      paths:
+      - path: /greetings
+        pathType: Prefix
+        backend:
+          service:
+            name: greetings-api-service
+            port:
+              number: 80
+```
+
+
+## Deploy da Aplicação e Verificação:
+
+1. **Edição do arquivo hosts:**
+   - Edite o arquivo `hosts` (do sistema ao qual você quer utilizar para acessar a rota) para incluir a entrada correspondente ao host configurado no Ingress, apontando para o IP do seu cluster. Exemplo: `192.168.1.7 raspberry.local`.
+
+2. **Aplicação do arquivo YAML:**
+   - Aplique o arquivo YAML utilizando o comando:
+     ```bash
+     kubectl apply -f nome-do-arquivo.yaml
+     ```
+
+3. **Verificação dos Pods:**
+   - Verifique se os pods estão em execução com o comando:
+     ```bash
+     kubectl get pods
+     ```
+
+4. **Verificação dos Serviços:**
+   - Confira se os serviços foram criados corretamente com o comando:
+     ```bash
+     kubectl get services
+     ```
+
+5. **Acesso à Greetings API:**
+   - Acesse a Greetings API pelo endereço correspondente, como `http://raspberry.local/greetings`.
+
+Você verá que a API GET disponibilizada na rota `/greetings` irá retornar a listagem de pods relacionados aos seus respectivos nós, além da informação de qual nó está tratando a requisição a partir do balanço de carga.
+
+Dessa forma, podemos compreender os conceitos de escabilidade e balanceamento de carga sendo aplicados a um cluster de Raspberry.
+
+Espero que tenha gostado, e até a próxima!
