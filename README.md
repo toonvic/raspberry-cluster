@@ -42,7 +42,7 @@ Certifique-se de atender aos seguintes requisitos:
 
 7. **Raspberry Pi Imager:** Tenha o [Raspberry Pi Imager](https://www.raspberrypi.org/software/) instalado em sua máquina para realizar a instalação headless dos SOs em seus Raspberry.
 
-### Instalação do OS via Raspberry Pi Imager:
+## Instalação do OS via Raspberry Pi Imager
 
 Para instalar o sistema operacional nos Raspberry Pi, utilizaremos o Raspberry Pi Imager, uma ferramenta intuitiva que simplifica o processo. Siga estes passos:
 
@@ -63,6 +63,7 @@ Para instalar o sistema operacional nos Raspberry Pi, utilizaremos o Raspberry P
    
 6. **Preenchimento de Informações:**
    - Preencha as informações do seu usuário, incluindo nome, senha desejada e o nome do seu Raspberry (hostname).
+   - Certifique-se de **nomear diferentes hostnames para cada Raspberry (master, node1, node2)**.
 
 7. **Configuração da Rede Wi-Fi (Opcional):**
    - Caso esteja utilizando Wi-Fi, especifique as informações de rede, como o nome (SSID) e a senha.
@@ -80,11 +81,12 @@ Para instalar o sistema operacional nos Raspberry Pi, utilizaremos o Raspberry P
 
 Agora, o sistema operacional está pronto para ser utilizado nos Raspberry Pi. Este procedimento deve ser repetido para cada Raspberry Pi no cluster.
 
-### Instalação do K3S:
+## Instalação do K3S:
 
-O K3S é um Kubernetes leve e fácil de usar, perfeito para ambientes distribuídos como o Raspberry Pi. Siga os passos abaixo para instalar o K3S nos seus dispositivos:
+O K3S é um Kubernetes leve e fácil de usar, perfeito para dispositivos como o Raspberry Pi.
 
-1. **Preparação do Raspberry Pi:**
+**Configurações do dispositivo:**
+
    - Antes de instalar o K3S, é necessário ajustar a configuração do sistema. Execute o seguinte comando para editar o arquivo `cmdline.txt`:
      ```bash
      sudo nano /boot/cmdline.txt
@@ -99,7 +101,7 @@ O K3S é um Kubernetes leve e fácil de usar, perfeito para ambientes distribuí
   
 **Configuração do IP Fixo:**
 
-Após instalar o K3S, é recomendável configurar um IP fixo para garantir consistência na comunicação do cluster. Siga os passos abaixo:
+É recomendável configurar um IP fixo para garantir consistência na comunicação do cluster. Siga os passos abaixo:
 
 1. **Obtenção do Endereço IP e Gateway:**
    - Execute o seguinte comando para obter o endereço IP do Raspberry Pi:
@@ -142,3 +144,51 @@ Após instalar o K3S, é recomendável configurar um IP fixo para garantir consi
      ```
 
 Agora, o Raspberry Pi está configurado com um IP fixo, proporcionando estabilidade na comunicação do cluster K3S.
+
+Até este ponto, a configuração é **comum tanto para o nó master quanto para os seus nós**. (●'◡'●)
+
+### Instalação do K3S - Nó Master:
+
+1. **Acesso como Superusuário:**
+   - Antes de prosseguir, torne-se superusuário executando:
+     ```bash
+     sudo su -
+     ```
+   - Este comando concede privilégios administrativos, facilitando a execução de operações que exigem permissões elevadas.
+
+2. **Instalação do K3S:**
+   - Execute o seguinte comando para instalar o K3S no nó master:
+     ```bash
+     curl -sfL https://get.k3s.io/ | sh -s - --write-kubeconfig-mode 644
+     ```
+     O parâmetro `--write-kubeconfig-mode 644` define as permissões do arquivo kubeconfig.
+
+3. **Verificação da Instalação:**
+   - Após a instalação, verifique se o nó master está em execução. Execute o seguinte comando:
+     ```bash
+     kubectl get nodes
+     ```
+Isso deve exibir o nó master como pronto no cluster K3S.
+
+### Instalação do K3S - Nós Trabalhadores:
+
+1. **Obtenção do Token e IP do Nó Master:**
+   - Execute os seguintes comandos no nó master para obter as informações necessárias:
+     ```bash
+     token=$(cat /var/lib/rancher/k3s/server/node-token)
+     master_ip=$(hostname -I)
+     ```
+
+2. **Instalação do K3S nos Nós Trabalhadores:**
+   - Substitua `SEU_TOKEN_AQUI` pelo valor de `$token` e `SEU_IP_MASTER_AQUI` pelo valor de `$master_ip` no comando abaixo:
+     ```bash
+     curl -sfL https://get.k3s.io/ | K3S_TOKEN="SEU_TOKEN_AQUI" K3S_URL="https://SEU_IP_MASTER_AQUI:6443/" sh -
+     ```
+     Este comando instala o K3S nos nós trabalhadores, conectando-os ao nó master.
+
+3. **Verificação da Conexão:**
+   - Após a instalação, verifique se os nós trabalhadores estão conectados ao cluster. Execute o seguinte comando no nó master:
+     ```bash
+     kubectl get nodes
+     ```
+Os nós trabalhadores devem aparecer como "prontos" no cluster K3S.
