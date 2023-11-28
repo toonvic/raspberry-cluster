@@ -1,0 +1,91 @@
+# Este arquivo Kubernetes YAML define a configuração para implantar a aplicação Greetings API em um cluster K8s.
+
+# Deployment para a Greetings API
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greetings-api-deployment
+  labels:
+    app: greetings-api
+spec:
+  replicas: 6  # Número desejado de réplicas para escalabilidade
+  selector:
+    matchLabels:
+      app: greetings-api
+  template:
+    metadata:
+      labels:
+        app: greetings-api
+    spec:
+      containers:
+        - name: greetings-api
+          image: victordoamaral/greetingsapi:1.2.3  # Imagem da aplicação com a versão específica
+          imagePullPolicy: Always  # Garante que a imagem seja sempre baixada
+          ports:
+            - containerPort: 80  # Porta na qual a aplicação está escutando
+
+---
+
+# RoleBinding para conceder permissões ao ServiceAccount padrão
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-reader-binding
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+# Role para definir permissões específicas para leitura de pods
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+
+---
+
+# Serviço para expor a Greetings API
+apiVersion: v1
+kind: Service
+metadata:
+  name: greetings-api-service
+spec:
+  selector:
+    app: greetings-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort  # Expõe o serviço externamente via NodePort
+
+---
+
+# Ingress para rotear tráfego para o serviço Greetings API
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: greetings-api-ingress
+spec:
+  rules:
+  - host: raspberry.local  # Substitua pelo domínio ou IP de sua escolha
+    http:
+      paths:
+      - path: /greetings
+        pathType: Prefix
+        backend:
+          service:
+            name: greetings-api-service
+            port:
+              number: 80
