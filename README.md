@@ -93,6 +93,14 @@ Para instalar o sistema operacional nos Raspberry Pi, utilizaremos o Raspberry P
 
 Agora, o sistema operacional está pronto para ser utilizado nos Raspberry Pi. Este procedimento deve ser repetido para cada Raspberry Pi no cluster.
 
+Realizada a instalação, você pode inserir o disco em seu Raspberry e fazer a conexão SSH via um terminal de preferência da sua máquina.
+
+Basta digitar no terminal o seguinte comando substituindo pelos valores definidos e informar a senha:
+
+```bash
+ssh username@hostname
+```
+
 <br>
 
 ## Instalação do K3S:
