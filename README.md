@@ -361,3 +361,5 @@ Você verá que a API GET disponibilizada na rota `/greetings` irá retornar a l
 Dessa forma, podemos compreender os conceitos de escabilidade e balanceamento de carga sendo aplicados a um cluster de Raspberry.
 
 Espero que tenha gostado, e até a próxima!
+
+(❁´◡`❁)
