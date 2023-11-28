@@ -4,6 +4,8 @@
 
 Este repositório tem como objetivo fornecer um guia passo a passo para a clusterização de dispositivos Raspberry Pi utilizando K3S, uma distribuição leve do Kubernetes. A clusterização de Raspberry Pi é uma abordagem poderosa para distribuir e escalar aplicações em ambientes de computação de borda. Neste exemplo, o foco está em subir uma aplicação que pode ser distribuída entre os nós de processamento, aproveitando as vantagens de escalabilidade e poder computacional oferecidos por uma configuração de cluster.
 
+<br>
+
 ## Objetivos
 
 Os principais objetivos deste projeto incluem:
@@ -14,6 +16,8 @@ Os principais objetivos deste projeto incluem:
 
 3. **Escalabilidade:** Demonstrar como a adição de novos nós ao cluster pode facilmente escalar a capacidade de processamento disponível para as aplicações.
 
+<br>
+
 ## Vantagens da Utilização de Raspberry Pi
 
 A escolha do Raspberry Pi para este projeto é baseada em várias vantagens:
@@ -23,6 +27,8 @@ A escolha do Raspberry Pi para este projeto é baseada em várias vantagens:
 2. **Processamento Ideal para Projetos Pessoais:** O Raspberry Pi oferece uma combinação ideal de desempenho e consumo de energia, tornando-o adequado para uma variedade de projetos pessoais e experimentações.
 
 3. **Custo Acessível:** A acessibilidade do Raspberry Pi permite a construção de clusters de baixo custo, tornando a clusterização uma opção viável para entusiastas e projetos com recursos limitados.
+
+<br>
 
 ## Requisitos
 
@@ -41,6 +47,8 @@ Certifique-se de atender aos seguintes requisitos:
 6. **Disco para Cada Raspberry Pi:** Cada Raspberry Pi deve ter um meio de armazenamento, como um cartão SD, microSD, SSD ou unidade USB, para o sistema operacional e aplicativos.
 
 7. **Raspberry Pi Imager:** Tenha o [Raspberry Pi Imager](https://www.raspberrypi.org/software/) instalado em sua máquina para realizar a instalação headless dos SOs em seus Raspberry.
+
+<br>
 
 ## Instalação do OS via Raspberry Pi Imager
 
@@ -77,9 +85,9 @@ Para instalar o sistema operacional nos Raspberry Pi, utilizaremos o Raspberry P
 10. **Conclusão e Remoção do Dispositivo:**
     - Assim que a gravação estiver concluída, o Raspberry Pi Imager exibirá uma mensagem de sucesso.
 
-![Raspberry Pi Imager](caminho/para/imagem.jpg)
-
 Agora, o sistema operacional está pronto para ser utilizado nos Raspberry Pi. Este procedimento deve ser repetido para cada Raspberry Pi no cluster.
+
+<br>
 
 ## Instalação do K3S:
 
@@ -147,6 +155,8 @@ Agora, o Raspberry Pi está configurado com um IP fixo, proporcionando estabilid
 
 Até este ponto, a configuração é **comum tanto para o nó master quanto para os seus nós**. (●'◡'●)
 
+<br>
+
 ### Instalação do K3S - Nó Master:
 
 1. **Acesso como Superusuário:**
@@ -170,6 +180,8 @@ Até este ponto, a configuração é **comum tanto para o nó master quanto para
      ```
 Isso deve exibir o nó master como pronto no cluster K3S.
 
+<br>
+
 ### Instalação do K3S - Nós Trabalhadores:
 
 1. **Obtenção do Token e IP do Nó Master:**
@@ -192,6 +204,8 @@ Isso deve exibir o nó master como pronto no cluster K3S.
      kubectl get nodes
      ```
 Os nós trabalhadores devem aparecer como "prontos" no cluster K3S.
+
+<br>
 
 # Implantação da Greetings API no Kubernetes
 
@@ -296,6 +310,7 @@ spec:
               number: 80
 ```
 
+<br>
 
 ## Deploy da Aplicação e Verificação:
 
@@ -324,6 +339,10 @@ spec:
    - Acesse a Greetings API pelo endereço correspondente, como `http://raspberry.local/greetings`.
 
 Você verá que a API GET disponibilizada na rota `/greetings` irá retornar a listagem de pods relacionados aos seus respectivos nós, além da informação de qual nó está tratando a requisição a partir do balanço de carga.
+
+<br>
+
+## Fim
 
 Dessa forma, podemos compreender os conceitos de escabilidade e balanceamento de carga sendo aplicados a um cluster de Raspberry.
 
