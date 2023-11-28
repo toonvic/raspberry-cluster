@@ -209,7 +209,7 @@ Os nós trabalhadores devem aparecer como "prontos" no cluster K3S.
 
 # Implantação da Greetings API no Kubernetes
 
-A seguir está o arquivo YAML para implantar a Greetings API em um cluster Kubernetes. O código está disponível no [GitHub](https://github.com/seu-usuario/seu-repo/caminho/para/o/arquivo.yaml).
+A seguir está o arquivo YAML para implantar a Greetings API em um cluster Kubernetes.
 
 Você pode criar um arquivo utilizando o comando abaixo e colar o conteúdo no mesmo:
 ```bash
